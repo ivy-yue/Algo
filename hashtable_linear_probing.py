@@ -17,23 +17,23 @@ class HashTable:
   # previously associated with `key`.
   # Note: Neither `key` nor `value` may be None (an exception will be raised)
   def insert(self, key, value):
-    hash_key = cs5112_hash1(key) % self.size
-    while self.array.get(hash_key) != None:
-      hash_key = (hash_key + 1) % self.size
-    self.array.set(hash_key, (key, value))
     self.item_count += 1
-    if(self.item_count / self.array_size > self.load_factor):
+    if (self.item_count * 1.0 / self.array_size) > self.load_factor:
       self._resize_array()
+    hash_key = cs5112_hash1(key) % self.array_size
+    while self.array.get(hash_key) is not None:
+      hash_key = (hash_key + 1) % self.array_size
+    self.array.set(hash_key, (key, value))
+
     # YOUR CODE HERE
 
-    raise NotImplementedError()
 
   # Returns the value associated with `key` in the hash table, or None if no
   # such value is found.
   # Note: `key` may not be None (an exception will be raised)
   def get(self, key):
     # YOUR CODE HERE
-    hash_key = cs5112_hash1(key) % self.size
+    hash_key = cs5112_hash1(key) % self.array_size
     start = hash_key
     while self.array.get(hash_key)[0] != key:
       hash_key += 1
@@ -50,14 +50,15 @@ class HashTable:
   def remove(self, key):
     # YOUR CODE HERE
     self.item_count -= 1
-    hash_key = cs5112_hash1(key) % self.size
+    hash_key = cs5112_hash1(key) % self.array_size
     start = hash_key
-    while self.array.get(hash_key)[0] != key:
-      hash_key += 1
+    while self.array.get(hash_key) is None or self.array.get(hash_key)[0] != key:
+      hash_key = (hash_key + 1) % self.array_size
       if hash_key == start:
         return None
+    return_val = self.array.get(hash_key)[1]
     self.array.set(hash_key, None)
-    return self.array.get(hash_key)[1]
+    return return_val
 
 
   # Returns the number of elements in the hash table.
@@ -69,17 +70,18 @@ class HashTable:
   # Internal helper function for resizing the hash table's array once the ratio
   # of stored mappings to array size exceeds the specified load factor.
   def _resize_array(self):
-      new_array_size = 2 * self.array_size
-      new_array = FixedSizeArray(new_array_size)
-      for i in self.array_size:
-          new_hash_index = self.array.get(i)[0] % new_array_size
-          while new_array.get(new_hash_index) != None:
-              new_hash_index += 1
+    new_array_size = 2 * self.array_size
+    new_array = FixedSizeArray(new_array_size)
+    for i in range(self.array_size):
+        if self.array.get(i) is None:
+            continue
+        new_hash_index = cs5112_hash1(self.array.get(i)[0]) % new_array_size
+        while new_array.get(new_hash_index) is not None:
+          new_hash_index = (new_hash_index + 1) % new_array_size
+        new_array.set(new_hash_index, self.array.get(i))
+    self.array = new_array
+    self.array_size = new_array_size
 
-
-    # YOUR CODE HERE
-
-    raise NotImplementedError()
 
   # Internal helper function for accessing the array underlying the hash table.
   def _get_array(self):
