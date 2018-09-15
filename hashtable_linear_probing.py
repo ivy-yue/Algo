@@ -19,15 +19,25 @@ class HashTable:
   # previously associated with `key`.
   # Note: Neither `key` nor `value` may be None (an exception will be raised)
   def insert(self, key, value):
+    # first search
     self.item_count += 1
     if (self.item_count * 1.0 / self.array_size) > self.load_factor:
       self._resize_array()
     hash_key = cs5112_hash1(key) % self.array_size
     while self.array.get(hash_key) is not None\
+            and self.array.get(hash_key)[0] != key\
             and not self.array.get(hash_key)[2]:  # not deleted
       hash_key = (hash_key + 1) % self.array_size
     # if there is an vacant array in the middle, just reset it
+    # if previously key is associated, just replace it
     self.array.set(hash_key, (key, value, False))
+    # Delete previously entry with the same key
+    hash_key += 1
+    while self.array.get(hash_key) is not None:
+      if self.array.get(hash_key)[0] == key:
+        self.array.set(hash_key, (key, value, True))
+      hash_key = (hash_key + 1) % self.array_size
+
 
 
   # Returns the value associated with `key` in the hash table, or None if no
