@@ -35,7 +35,7 @@ class HashTable:
     # YOUR CODE HERE
     hash_key = cs5112_hash1(key) % self.array_size
     start = hash_key
-    while self.array.get(hash_key)[0] != key:
+    while self.array.get(hash_key)[0] != key:  # TODO: if the entry is None, it will cause Exception
       hash_key += 1
       if hash_key == start:
         return None
@@ -49,10 +49,11 @@ class HashTable:
   # Note: `key` may not be None (an exception will be raised)
   def remove(self, key):
     # YOUR CODE HERE
-    self.item_count -= 1
+    self.item_count -= 1  # TODO: if non-exist, count should not -1
     hash_key = cs5112_hash1(key) % self.array_size
     start = hash_key
     while self.array.get(hash_key) is None or self.array.get(hash_key)[0] != key:
+      # TODO: time complexity is O(array_size) which could be optimized at least to O(array_size * load_factor)
       hash_key = (hash_key + 1) % self.array_size
       if hash_key == start:
         return None
