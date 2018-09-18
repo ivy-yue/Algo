@@ -39,7 +39,7 @@ class HashTable:
     self.item_count += 1
     if (self.item_count * 1.0 / self.array_size) > self.load_factor:
       self._resize_array()
-    index = cs5112_hash1(key)
+    index = cs5112_hash1(key) % self.array_size
     if self.array.get(index) is None:
       self.array.set(index, SLLNode((key, value)))
     else:

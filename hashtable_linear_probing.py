@@ -22,27 +22,50 @@ class HashTable:
     # first search
     self.item_count += 1
     if (self.item_count * 1.0 / self.array_size) > self.load_factor:
-      self._resize_array()
+        self._resize_array()
     hash_key = cs5112_hash1(key) % self.array_size
-    while self.array.get(hash_key) is not None\
-            and self.array.get(hash_key)[0] != key\
-            and not self.array.get(hash_key)[2]:  # not deleted
-      hash_key = (hash_key + 1) % self.array_size
-    # if there is an vacant array in the middle, just reset it
-    # if previously key is associated, just replace it
-    if self.array.get(hash_key) is not None and \
-        self.array.get(hash_key)[0] == key:  # overwrite case
-        self.item_count -= 1
-        self.array.set(hash_key, (key, value, False))
-        return  # accelerate
-    self.array.set(hash_key, (key, value, False))
-    # Delete previously entry with the same key
-    hash_key += 1
+    #condtion: hash_key is not empty
     while self.array.get(hash_key) is not None:
-      if self.array.get(hash_key)[0] == key:
-        self.array.set(hash_key, (key, value, True))
-        break
-      hash_key = (hash_key + 1) % self.array_size
+        # condition 1: rewrite, same key and haven't been deleted
+        if self.array.get(hash_key)[0] == key and not self.array.get(hash_key)[2]:
+            self.item_count -= 1
+            self.array.set(hash_key, (key, value, False))
+            return
+        #condition 2: rewrite, same key but been deleted
+        elif self.array.get(hash_key)[0] == key and self.array.get(hash_key)[2]:
+            self.array.set(hash_key, (key, value, False))
+            return
+        #condition 3: empty space, but still need to search for the rest
+        elif self.array.get(hash_key)[2]:
+            self.array.set(hash_key, (key, value, False))
+            hash_key = (hash_key + 1) % self.array_size
+            while self.array.get(hash_key) is not None:
+                if self.array.get(hash_key)[0] == key:
+                    self.item_count -= 1
+                    self.array.set(hash_key, (key, self.array.get(hash_key)[1], True))
+                return
+        hash_key = (hash_key + 1) % self.array_size
+    self.array.set(hash_key, (key, value, False))
+    return
+    # while self.array.get(hash_key) is not None\
+    #         and self.array.get(hash_key)[0] != key\
+    #         and not self.array.get(hash_key)[2]:  # not deleted
+    #   hash_key = (hash_key + 1) % self.array_size
+    # # if there is an vacant array in the middle, just reset it
+    # # if previously key is associated, just replace it
+    # if self.array.get(hash_key) is not None and \
+    #     self.array.get(hash_key)[0] == key:  # overwrite case
+    #     self.item_count -= 1
+    #     self.array.set(hash_key, (key, value, False))
+    #     return  # accelerate
+    # self.array.set(hash_key, (key, value, False))
+    # # Delete previously entry with the same key
+    # hash_key = (hash_key + 1) % self.array_size
+    # while self.array.get(hash_key) is not None:
+    #   if self.array.get(hash_key)[0] == key:
+    #     self.array.set(hash_key, (key, value, True))
+    #     break
+    #   hash_key = (hash_key + 1) % self.array_size
 
 
   # Returns the value associated with `key` in the hash table, or None if no
@@ -107,7 +130,7 @@ class HashTable:
     new_array_size = 2 * self.array_size
     new_array = FixedSizeArray(new_array_size)
     for i in range(self.array_size):
-        if self.array.get(i) is None or not self.array.get(i)[2]:
+        if self.array.get(i) is None or self.array.get(i)[2]:
             continue
         new_hash_index = cs5112_hash1(self.array.get(i)[0]) % new_array_size
         while new_array.get(new_hash_index) is not None: # for a new array, we do not consider deleted case

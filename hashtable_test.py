@@ -4,9 +4,10 @@
 from hashtable_chaining import HashTable as HashTableChaining
 from hashtable_linear_probing import HashTable as HashTableProbing
 
-for (name, HashTable) in [("linear probing", HashTableProbing)]:
+for (name, HashTable) in [("linear probing", HashTableProbing), ('chaining',HashTableChaining )]:
+    print "Testing " + name
     table = HashTable()
-    # table.insert("example_key", "example_value")
+    table.insert("example_key", "example_value")
     # table.insert("example_key1", "examplewfw_value")
     # table.insert("example_key2", "example_1v12alue")
     # table.insert("example_key3", "example_v331alue")
@@ -15,11 +16,16 @@ for (name, HashTable) in [("linear probing", HashTableProbing)]:
         name = "example" + str(i)
         val = "value" + str(i)
         table.insert(name, val)
-    print table.get("example5")
+    print table.get("example_key")
     print table.get("example11")
     # if table.get("example_key") != "example_value":
     #     print("%s hash table did not return example value"%name)
     for i in range(10):
         name = "example" + str(i)
         table.remove(name)
+    for i in range(3):
+        name = "example" + str(i)
+        val = "update_value" + str(i)
+        table.insert(name, val)
+    print table.get('example8')
     print table.size()
