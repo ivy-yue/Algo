@@ -30,14 +30,16 @@ class HashTable:
       hash_key = (hash_key + 1) % self.array_size
     # if there is an vacant array in the middle, just reset it
     # if previously key is associated, just replace it
+    if self.array.get(hash_key)[0] == key:
+        self.item_count -= 1
     self.array.set(hash_key, (key, value, False))
     # Delete previously entry with the same key
     hash_key += 1
     while self.array.get(hash_key) is not None:
       if self.array.get(hash_key)[0] == key:
         self.array.set(hash_key, (key, value, True))
+        break
       hash_key = (hash_key + 1) % self.array_size
-
 
 
   # Returns the value associated with `key` in the hash table, or None if no
