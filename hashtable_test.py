@@ -20,12 +20,12 @@ for (name, HashTable) in [("linear probing", HashTableProbing), ('chaining',Hash
     print table.get("example11")
     # if table.get("example_key") != "example_value":
     #     print("%s hash table did not return example value"%name)
-    for i in range(10):
+    for i in range(10,20):
         name = "example" + str(i)
         table.remove(name)
     for i in range(3):
         name = "example" + str(i)
         val = "update_value" + str(i)
         table.insert(name, val)
-    print table.get('example8')
+    print table.get('example1')
     print table.size()

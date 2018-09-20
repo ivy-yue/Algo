@@ -47,25 +47,6 @@ class HashTable:
         hash_key = (hash_key + 1) % self.array_size
     self.array.set(hash_key, (key, value, False))
     return
-    # while self.array.get(hash_key) is not None\
-    #         and self.array.get(hash_key)[0] != key\
-    #         and not self.array.get(hash_key)[2]:  # not deleted
-    #   hash_key = (hash_key + 1) % self.array_size
-    # # if there is an vacant array in the middle, just reset it
-    # # if previously key is associated, just replace it
-    # if self.array.get(hash_key) is not None and \
-    #     self.array.get(hash_key)[0] == key:  # overwrite case
-    #     self.item_count -= 1
-    #     self.array.set(hash_key, (key, value, False))
-    #     return  # accelerate
-    # self.array.set(hash_key, (key, value, False))
-    # # Delete previously entry with the same key
-    # hash_key = (hash_key + 1) % self.array_size
-    # while self.array.get(hash_key) is not None:
-    #   if self.array.get(hash_key)[0] == key:
-    #     self.array.set(hash_key, (key, value, True))
-    #     break
-    #   hash_key = (hash_key + 1) % self.array_size
 
 
   # Returns the value associated with `key` in the hash table, or None if no
@@ -78,15 +59,6 @@ class HashTable:
             return self.array.get(hash_key)[1]
         hash_key += 1
     return None
-    # Removed start var since we will not search the whole array
-    # for the worst case hash(value) = constant:
-    # since the load factor < 1, there must be some None in the array [never has elements]
-    # start = hash_key
-    # while self.array.get(hash_key)[0] != key:  # TODO: if the entry is None, it will cause Exception
-    #   hash_key += 1
-    #   if hash_key == start:
-    #     return None
-    # return self.array.get(hash_key)[1]
 
 
 
@@ -97,7 +69,6 @@ class HashTable:
   def remove(self, key):
     if self.item_count == 0:
         return None  # add a corner case to accelerate
-    # self.item_count -= 1  # TODO: if non-exist, count should not -1
     # search for the entry first
     hash_key = cs5112_hash1(key) % self.array_size
     while self.array.get(hash_key) is not None:
@@ -107,16 +78,8 @@ class HashTable:
             self.array.set(hash_key, (key, value, True))
             self.item_count -= 1
             return value
+        hash_key = (hash_key + 1) % self.array_size
     return None
-    # start = hash_key
-    # while self.array.get(hash_key) is None or self.array.get(hash_key)[0] != key:
-    #   # TODO: time complexity is O(array_size) which could be optimized at least to O(array_size * load_factor)
-    #   hash_key = (hash_key + 1) % self.array_size
-    #   if hash_key == start:
-    #     return None
-    # return_val = self.array.get(hash_key)[1]
-    # self.array.set(hash_key, None)
-    # return return_val
 
 
   # Returns the number of elements in the hash table.

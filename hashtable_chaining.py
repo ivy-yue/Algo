@@ -53,13 +53,13 @@ class HashTable:
           return
         prevNode = node
         node = node.get_next()
-      prevNode.set_next(SLLNode)
+      prevNode.set_next(SLLNode((key, value)))
 
   # Returns the value associated with `key` in the hash table, or None if no
   # such value is found.
   # Note: `key` may not be None (an exception will be raised)
   def get(self, key):
-    index = cs5112_hash1(key)
+    index = cs5112_hash1(key) % self.array_size
     node = self.array.get(index)
     while node is not None:
       if node.get_value()[0] == key:
@@ -73,7 +73,7 @@ class HashTable:
   # that was removed. If no such value exists, the method will return None.
   # Note: `key` may not be None (an exception will be raised)
   def remove(self, key):
-    index = cs5112_hash1(key)
+    index = cs5112_hash1(key) % self.array_size
     node = self.array.get(index)
     prevNode = None
     while node is not None:
@@ -101,16 +101,17 @@ class HashTable:
     for i in range(self.array_size):
       if self.array.get(i) is None:
         continue
-      node = self.array.get(i)
-      while node is not None:
-        new_index = cs5112_hash1(node.get_value()[0]) % new_array_size
-        new_node = new_array.get(new_index)
-        if new_node is None:
-          new_array.set(new_index, SLLNode(node.get_value()))
+      to_copy_node = self.array.get(i)
+      while to_copy_node is not None:
+        new_index = cs5112_hash1(to_copy_node.get_value()[0]) % new_array_size
+        if new_array.get(new_index) is None:
+          new_array.set(new_index, SLLNode(to_copy_node.get_value()))
         else:
-          while new_node.get_next() is not None:
+          new_node = new_array.get(new_index)
+          while new_node.get_next() is not None: # no overwrite here
             new_node = new_node.get_next()
-          new_node.set_next(SLLNode(node.get_value()))
+          new_node.set_next(SLLNode(to_copy_node.get_value()))
+        to_copy_node = to_copy_node.get_next()
     self.array = new_array
     self.array_size = new_array_size
 
